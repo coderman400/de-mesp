@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import axios from 'axios';
+import {useNavigate} from 'react-router-dom'
 
 function Auth() {
   const [currentAccount, setCurrentAccount] = useState(null);
   const [role, setRole] = useState(null);
-
+  
   const handleLogin = async (address) => {
     try {
       const response = await axios.post('/api/login', { address });
@@ -75,6 +76,7 @@ function Auth() {
       ) : (
         <button onClick={connectWallet}>Connect Wallet</button>
       )}
+      
     </div>
   );
 }

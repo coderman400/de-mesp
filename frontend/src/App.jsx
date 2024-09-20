@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
-    <main className='flex bg-white m-40 mx-64 justify-center p-4 shadow-md max-w-full rounded-xl'>
+    <main className='flex bg-white m-40 mx-64 justify-center p-4 shadow-md max-w-screen-xl rounded-xl'>
         <Router>
           <Routes>
             <Route path="/" element={<Wallet />} />

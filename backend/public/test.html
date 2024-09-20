@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPFS File Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+        button {
+            margin-top: 10px;
+        }
+        #cidDisplay {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload File to IPFS</h1>
+    <input type="file" id="fileInput" />
+    <button id="uploadBtn">Upload</button>
+
+    <div id="cidDisplay"></div>
+
+    <h2>Retrieve File</h2>
+    <input type="text" id="cidInput" placeholder="Enter CID" />
+    <button id="retrieveBtn">Retrieve</button>
+
+    <script>
+        document.getElementById('uploadBtn').onclick = async () => {
+            const fileInput = document.getElementById('fileInput');
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            const response = await fetch('http://172.18.231.45:3000/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('cidDisplay').innerText = `CID: ${data.cid}`;
+            } else {
+                alert('Error uploading file');
+            }
+        };
+
+        document.getElementById('retrieveBtn').onclick = async () => {
+            const cid = document.getElementById('cidInput').value;
+            const response = await fetch(`http://localhost:3000/get/${cid}`);
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'downloaded_file.pdf';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } else {
+                alert('Error retrieving file');
+            }
+        };
+    </script>
+</body>
+</html>

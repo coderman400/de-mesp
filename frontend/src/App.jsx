@@ -1,14 +1,21 @@
 import { useState } from 'react'
-import { Wallet } from './components'
+import { Wallet , NotFound, Register} from './components'
 import './App.css'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
-    <div>
-      <div className='flex bg-white mt-20 mx-64 justify-center p-4 shadow-md max-w-full'>
-        <Wallet></Wallet>
-      </div>
-    </div>
+    <main className='flex bg-white m-40 mx-64 justify-center p-4 shadow-md max-w-full'>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Wallet />} />
+            <Route path="/register" element={<Register />} />
+            {/* Fallback route for undefined paths */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+       </Router>
+        
+      </main>
   )
 }
 

@@ -1,15 +1,14 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { Wallet } from './components'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <p className='bg-blue-300'>HI</p>
-    </>
+    <div>
+      <div className='flex bg-white mt-20 mx-64 justify-center p-4 shadow-md max-w-full'>
+        <Wallet></Wallet>
+      </div>
+    </div>
   )
 }
 

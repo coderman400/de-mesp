@@ -6,6 +6,10 @@ import {useNavigate} from 'react-router-dom'
 function Auth() {
   const [currentAccount, setCurrentAccount] = useState(null);
   const [role, setRole] = useState(null);
+
+  const navigate = useNavigate();
+
+  const goToAddRecords = () => navigate('/addrecords/');
   
   const handleLogin = async (address) => {
     try {
@@ -65,16 +69,17 @@ function Auth() {
   }, []);
 
   return (
-    <div>
-      <h1>Sign In with Metamask</h1>
+    <div className='h-80 w-fit'>
+      <h1 className='text-4xl text-center font-bold m-4'>Connect Metamask Wallet</h1>
       {currentAccount ? (
-        <div>
-          <p>Welcome, your address: {currentAccount}</p>
+        <div className='p-10'>
+          <p className='text-lg'>Welcome, your address: {currentAccount}</p>
+          <button className='w-full font-bold bg-green-500 text-white p-2 my-2 rounded mt-16 hover:bg-green-300' onClick={goToAddRecords}>Add Records</button>
           {role && <p>Your role: {role}</p>} {/* Display the user's role */}
           {/* You can also add logic to show user info or redirect */}
         </div>
       ) : (
-        <button onClick={connectWallet}>Connect Wallet</button>
+        <button className='w-full font-bold bg-blue-500 text-white p-2 my-2 rounded mt-16 hover:bg-blue-600' onClick={connectWallet}>Connect Wallet</button>
       )}
       
     </div>

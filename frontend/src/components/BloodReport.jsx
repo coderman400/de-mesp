@@ -39,10 +39,10 @@ const BloodReportForm = () => {
 
     try {
       // Send formData to the backend
-      // const response = await axios.post('http://172.18.231.45:3000/upload', formData);
-      // const ipfsHash = response.data.cid; // The CID returned from IPFS
+      const response = await axios.post('http://172.18.231.45:3000/upload', formData);
+      const ipfsHash = response.data.cid; // The CID returned from IPFS
 
-      let ipfsHash='QmQ7jf3rjZKJHoZ3jGxDtrbj78cJ9kgwgmYSd7rYFvPg8Q';
+      // let ipfsHash='QmQ7jf3rjZKJHoZ3jGxDtrbj78cJ9kgwgmYSd7rYFvPg8Q';
       await window.ethereum.request({ method: 'eth_requestAccounts' });
 
       // Store IPFS CID in the smart contract

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-
 import contractData from '../json/MedicalDataConsent.json'; 
 const abi = contractData.abi;
 const CONTRACT_ADDRESS = '0xdbf13f83cf94670d5e4149077690da2e83d21bf2';
@@ -8,6 +7,8 @@ const CONTRACT_ADDRESS = '0xdbf13f83cf94670d5e4149077690da2e83d21bf2';
 const ViewRequests = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [modalMessage, setModalMessage] = useState(''); // To store the modal message
+  const [showModal, setShowModal] = useState(false);    // To show/hide modal
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -20,21 +21,17 @@ const ViewRequests = () => {
         console.log("Contract Address:", CONTRACT_ADDRESS);
         console.log("Signer Address:", signerAddress);
 
-  
-        // Check if the patient has a medical record
         const record = await contract.medicalRecords(signerAddress);
         if (!record.patient) {
           console.log("No medical record found for this patient.");
           setLoading(false);
           return;
         }
-  
-        // Fetch the researchers who requested access
+
         const requesters = await contract.getAccessRequesters(signerAddress);
         console.log("Access Requesters:", requesters);
-  
+
         if (requesters.length === 0) {
-          console.log("No access requests found.");
           setEvents([]);
         } else {
           const requests = requesters.map((researcher) => ({
@@ -44,22 +41,20 @@ const ViewRequests = () => {
           setEvents(requests);
         }
         setLoading(false);
-
-        console.log("Access Requesters:", requesters);
-        } catch (error) {
+      } catch (error) {
         console.error("Error fetching access requests:", error);
-        if (error.reason) {
-            console.error("Revert reason:", error.reason);
-        } else {
-            console.error("Error details:", error);
-        }
-        }
+      }
     };
-  
+
     fetchRequests();
   }, []);
-  
-  
+
+  // Function to handle modal and auto-hide it after 3 seconds
+  const showModalWithMessage = (message) => {
+    setModalMessage(message);
+    setShowModal(true);
+    setTimeout(() => setShowModal(false), 3000);
+  };
 
   const handleApprove = async (researcherAddress) => {
     try {
@@ -67,12 +62,14 @@ const ViewRequests = () => {
       const signer = provider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
 
-      // Call giveConsent function to approve the request
       const tx = await contract.giveConsent(researcherAddress);
-      await tx.wait(); // Wait for the transaction to be mined
-      console.log('Consent given to:', researcherAddress);
+      await tx.wait(); 
+
+      setEvents(events.filter(event => event.researcher !== researcherAddress)); // Remove from list
+      showModalWithMessage(`Consent given to: ${researcherAddress}`);
     } catch (error) {
       console.error('Error giving consent:', error);
+      showModalWithMessage('Error giving consent');
     }
   };
 
@@ -82,12 +79,14 @@ const ViewRequests = () => {
       const signer = provider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
 
-      // Call revokeConsent function to deny the request
       const tx = await contract.revokeConsent(researcherAddress);
-      await tx.wait(); // Wait for the transaction to be mined
-      console.log('Consent revoked from:', researcherAddress);
+      await tx.wait();
+
+      setEvents(events.filter(event => event.researcher !== researcherAddress)); // Remove from list
+      showModalWithMessage(`Consent revoked from: ${researcherAddress}`);
     } catch (error) {
       console.error('Error revoking consent:', error);
+      showModalWithMessage('Error revoking consent');
     }
   };
 
@@ -133,6 +132,15 @@ const ViewRequests = () => {
             ))}
           </tbody>
         </table>
+      )}
+
+      {/* Modal for confirmation */}
+      {showModal && (
+        <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center'>
+          <div className='bg-white p-6 rounded shadow-md'>
+            <p>{modalMessage}</p>
+          </div>
+        </div>
       )}
     </div>
   );

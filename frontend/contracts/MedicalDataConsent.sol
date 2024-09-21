@@ -62,4 +62,9 @@ contract MedicalDataConsent {
     function getAccessRequesters(address patient) public view returns (address[] memory) {
         return accessRequesters[patient];
     }
+
+    function hasMedicalRecord(address patient) public view returns (bool) {
+    return medicalRecords[patient].patient != address(0);
+}
+
 }

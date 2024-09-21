@@ -11,7 +11,7 @@ const Request = () => {
 
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-      const contract = new ethers.Contract('0x029363c01b720af5f07dff8f4e0e2f040c677fb7', abi, signer);
+      const contract = new ethers.Contract('0xdbf13f83cf94670d5e4149077690da2e83d21bf2', abi, signer);
 
       const tx = await contract.requestAccess(patientAddress);
       await tx.wait();

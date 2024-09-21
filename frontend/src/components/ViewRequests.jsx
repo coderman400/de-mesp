@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 
 import contractData from '../json/MedicalDataConsent.json'; 
 const abi = contractData.abi;
-const CONTRACT_ADDRESS = '0x029363c01b720af5f07dff8f4e0e2f040c677fb7';
+const CONTRACT_ADDRESS = '0xdbf13f83cf94670d5e4149077690da2e83d21bf2';
 
 const ViewRequests = () => {
   const [events, setEvents] = useState([]);
@@ -14,33 +14,51 @@ const ViewRequests = () => {
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
-        const signerAddress = await signer.getAddress();  // Ensure this is correct
+        const signerAddress = await signer.getAddress();
         const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, provider);
+
+        console.log("Contract Address:", CONTRACT_ADDRESS);
+        console.log("Signer Address:", signerAddress);
+
   
-        // Fetch the researchers who requested access
-        const requesters = await contract.getAccessRequesters(signerAddress);
-        
-        if (requesters.length === 0) {
-          console.log("No access requests found for this patient.");
-          setEvents([]);  // Handle empty case
+        // Check if the patient has a medical record
+        const record = await contract.medicalRecords(signerAddress);
+        if (!record.patient) {
+          console.log("No medical record found for this patient.");
           setLoading(false);
           return;
         }
   
-        const requests = requesters.map((researcher) => ({
-          researcher, 
-          patient: signerAddress
-        }));
+        // Fetch the researchers who requested access
+        const requesters = await contract.getAccessRequesters(signerAddress);
+        console.log("Access Requesters:", requesters);
   
-        setEvents(requests);
+        if (requesters.length === 0) {
+          console.log("No access requests found.");
+          setEvents([]);
+        } else {
+          const requests = requesters.map((researcher) => ({
+            researcher,
+            patient: signerAddress
+          }));
+          setEvents(requests);
+        }
         setLoading(false);
-      } catch (error) {
-        console.error('Error fetching access requests:', error);
-      }
+
+        console.log("Access Requesters:", requesters);
+        } catch (error) {
+        console.error("Error fetching access requests:", error);
+        if (error.reason) {
+            console.error("Revert reason:", error.reason);
+        } else {
+            console.error("Error details:", error);
+        }
+        }
     };
   
     fetchRequests();
   }, []);
+  
   
 
   const handleApprove = async (researcherAddress) => {

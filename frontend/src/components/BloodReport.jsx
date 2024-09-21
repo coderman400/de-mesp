@@ -48,7 +48,7 @@ const BloodReportForm = () => {
       // Store IPFS CID in the smart contract
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-      const contract = new ethers.Contract('0x029363c01B720Af5F07DFf8f4e0e2f040C677Fb7', abi, signer);
+      const contract = new ethers.Contract('0xdbf13f83cf94670d5e4149077690da2e83d21bf2', abi, signer);
 
       try {
         const tx = await contract.addMedicalRecord(ipfsHash);

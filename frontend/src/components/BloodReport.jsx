@@ -19,77 +19,53 @@ const BloodReportForm = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     const formData = new FormData();
-    
+
     // Handle PDF upload and IPFS CID fetching logic
     if (pdfFile) {
-      formData.append('file', pdfFile);
+        formData.append('file', pdfFile);
+        console.log(pdfFile);
     }
 
-        // Connect to Ganache local blockchain
-    const provider = new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545');
+    let userAddress;
+    let signer; // Declare signer here
 
-    async function fetchBlockNumber() {
-      try {
-        // Fetch and log the current block number
-        const blockNumber = await provider.getBlockNumber();
-        console.log("Current block number:", blockNumber);
-      } catch (error) {
-        console.error("Error fetching block number:", error);
-      }
+    // Connect to MetaMask and get the user's address
+    try {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        signer = provider.getSigner(); // Assign signer here
+        userAddress = await signer.getAddress();
+    } catch (error) {
+        console.error('Error fetching user address:', error);
+        alert('Failed to get user address.');
+        setLoading(false);
+        return;
     }
 
-    fetchBlockNumber();
-
+    // Add additional information to formData
+    formData.append('userAddress', userAddress);
+    formData.append('reportType', 'Blood Report'); // Add the report type string
 
     try {
-      // Send formData to the backend
-      const response = await axios.post('http://172.18.231.45:3000/upload', formData);
-      const ipfsHash = response.data.cid; // The CID returned from IPFS
+        // Send formData to the backend
+        const response = await axios.post('http://172.18.231.45:3000/user/upload', formData);
+        const ipfsHash = response.data.cid; // The CID returned from IPFS
 
-      // let ipfsHash='QmQ7jf3rjZKJHoZ3jGxDtrbj78cJ9kgwgmYSd7rYFvPg8Q';
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
-
-      // Store IPFS CID in the smart contract
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const contract = new ethers.Contract(contractAddress, abi, signer);
-
-      try {
+        // Store IPFS CID in the smart contract
+        const contract = new ethers.Contract(contractAddress, abi, signer);
         const tx = await contract.addMedicalRecord(ipfsHash);
         await tx.wait(); // Wait for the transaction to be mined
-        console.log('Transaction successful:', tx);
-        alert('Blood report submitted successfully!');
-      } catch (error) {
-        console.error('Error submitting transaction:', error);
-        alert('Transaction failed. Please try again.');
-      }
-      
-      alert('Blood report submitted successfully!');
-    } catch (error) {
-      console.error('Error submitting blood report:', error);
-      alert('Failed to submit the blood report.');
-    } finally {
-      setLoading(false);
-    }
 
-    // try {
-    //   // Send formData to the backend using Axios
-    //   const response = await axios.post('http://172.18.231.45:3000/upload', formData, {
-    //     headers: {
-    //       'Content-Type': 'multipart/form-data', // Important to handle file upload
-    //     },
-    //   });
-    //   console.log('Response:', response.data);
-    //   alert('Blood report submitted successfully!');
-    //   reset(); // Reset the form after successful submission
-    //   setPdfFile(null); // Clear the uploaded PDF state
-    // } catch (error) {
-    //   console.error('Error submitting blood report:', error);
-    //   alert('Failed to submit the blood report.');
-    // } finally {
-    //   setLoading(false); // Set loading to false after submission completes
-    // }
-  };
+        alert('Blood report submitted successfully!');
+    } catch (error) {
+        console.error('Error submitting blood report:', error);
+        alert('Failed to submit the blood report.');
+    } finally {
+        setLoading(false);
+    }
+};
+
+
 
   const addTestField = () => {
     setAdditionalTests([...additionalTests, { name: '', value: '' }]);

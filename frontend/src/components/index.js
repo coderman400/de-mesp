@@ -8,4 +8,5 @@ import PhysicalCheckup from './PhysicalCheckup.jsx'
 import Dashboard from './Dashboard.jsx'
 import ViewRequests from './ViewRequests.jsx'
 import Request from './Request.jsx'
-export {Wallet, Register, ViewRequests, Request, Dashboard, NotFound, AddRecords, BloodReport, Diagnosis, PhysicalCheckup}
+import Navbar from './Navbar.jsx'
+export {Wallet,Navbar, Register, ViewRequests, Request, Dashboard, NotFound, AddRecords, BloodReport, Diagnosis, PhysicalCheckup}

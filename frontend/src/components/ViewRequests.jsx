@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 
+import abi from '../contracts/MedicalDataConsent.json';
+const contractABI = abi.abi; // Make sure to access the correct property
 
-import abi from '../json/MedicalDataConsent.json'; 
-const CONTRACT_ADDRESS = '0xYourContractAddressHere';
+const CONTRACT_ADDRESS = '0x715cDcEd28e9Ef205348815fB97E48D18897CA6d';
 
 const ViewRequests = () => {
   const [events, setEvents] = useState([]);
@@ -15,10 +16,13 @@ const ViewRequests = () => {
         // Ensure MetaMask is installed
         if (typeof window.ethereum !== 'undefined') {
           const provider = new ethers.providers.Web3Provider(window.ethereum);
-          const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, provider);
+          const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, provider);
+          const userAddress = window.ethereum.selectedAddress;
+          console.log('Current user address:', userAddress);
 
-          // Fetch "AccessRequested" events for the current user (patient)
-          const filter = contract.filters.AccessRequested(null, window.ethereum.selectedAddress);
+        // Fetch "AccessRequested" events for the current user (patient)
+          const filter = contract.filters.AccessRequested(null, userAddress);
+
           const eventLogs = await contract.queryFilter(filter);
 
           const eventDetails = eventLogs.map(log => ({

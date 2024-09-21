@@ -1,31 +1,29 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
+import { ethers } from 'ethers';
+import MedicalDataConsent from '../contracts/MedicalDataConsent.json'; // Adjust the path to your contract's ABI
 
 const BloodReportForm = () => {
   const { register, handleSubmit, formState: { errors }, watch, reset } = useForm();
   const [additionalTests, setAdditionalTests] = useState([]);
-  const [pdfFile, setPdfFile] = useState(null); // State to hold the uploaded PDF file
-  const [loading, setLoading] = useState(false); // Loading state
-  const isPdfUploaded = watch('pdfFile'); // Watch for PDF upload
+  const [pdfFile, setPdfFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [cid, setCid] = useState(null); // State for CID
+
+  const isPdfUploaded = watch('pdfFile');
 
   const onSubmit = async (data) => {
-    setLoading(true); // Set loading to true when submission starts
+    setLoading(true);
 
-    // Create FormData object to send both file and form data
     const formData = new FormData();
-
-    // If a PDF file is uploaded, add it to FormData
     if (pdfFile) {
       formData.append('file', pdfFile);
     } else {
-      // If not, append manual test data
       formData.append('hemoglobin', data.hemoglobin);
       formData.append('rbcCount', data.rbcCount);
       formData.append('wbcCount', data.wbcCount);
       formData.append('plateletCount', data.plateletCount);
-
-      // Append additional tests, if any
       additionalTests.forEach((test, index) => {
         formData.append(`additionalTests[${index}].name`, data.additionalTests[index].name);
         formData.append(`additionalTests[${index}].value`, data.additionalTests[index].value);
@@ -33,21 +31,43 @@ const BloodReportForm = () => {
     }
 
     try {
-      // Send formData to the backend using Axios
       const response = await axios.post('http://172.18.231.45:3000/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data', // Important to handle file upload
-        },
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
       console.log('Response:', response.data);
-      alert('Blood report submitted successfully!');
-      reset(); // Reset the form after successful submission
-      setPdfFile(null); // Clear the uploaded PDF state
+      setCid(response.data.cid); // Assume the CID is returned in the response
+
+      // Add the record to the blockchain
+      await addMedicalRecord(response.data.cid);
+      alert('Blood report submitted and record added successfully!');
+      reset();
+      setPdfFile(null);
     } catch (error) {
       console.error('Error submitting blood report:', error);
       alert('Failed to submit the blood report.');
     } finally {
-      setLoading(false); // Set loading to false after submission completes
+      setLoading(false);
+    }
+  };
+
+  const addMedicalRecord = async (dataHash) => {
+    if (typeof window.ethereum !== 'undefined') {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contractAddress = '0x715cDcEd28e9Ef205348815fB97E48D18897CA6d';
+
+      const contract = new ethers.Contract(contractAddress, MedicalDataConsent.abi, signer);
+
+      try {
+        const tx = await contract.addMedicalRecord(dataHash); // Adjust to your function
+        await tx.wait(); // Wait for transaction confirmation
+        console.log('Medical record added to the blockchain:', tx);
+      } catch (error) {
+        console.error('Error adding medical record:', error);
+        alert('Failed to add medical record to the blockchain.');
+      }
+    } else {
+      alert('Please install MetaMask to interact with the blockchain.');
     }
   };
 
@@ -58,13 +78,12 @@ const BloodReportForm = () => {
   const handlePdfUpload = (event) => {
     const file = event.target.files[0];
     if (file && file.type === 'application/pdf') {
-      setPdfFile(file); // Store the PDF file
+      setPdfFile(file);
     } else {
       alert('Please upload a valid PDF file.');
-      setPdfFile(null); // Reset if not a PDF
+      setPdfFile(null);
     }
   };
-
   return (
     <div className='flex justify-center items-center h-fit w-full'>
       <form onSubmit={handleSubmit(onSubmit)} className='bg-white shadow-md rounded p-6 w-4/5'>

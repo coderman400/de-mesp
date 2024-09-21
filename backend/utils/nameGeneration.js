@@ -1,5 +1,5 @@
 import { uniqueNamesGenerator, adjectives, colors, animals } from 'unique-names-generator';
-import User from '../models/user.js';  // Adjust the path if needed
+import { User } from '../models/user.js';  // Adjust the path if needed
 
 // Function to generate a unique nickname
 export const generateUniqueNickname = async () => {

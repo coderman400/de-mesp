@@ -9,8 +9,9 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-        input[type="file"] {
+        input[type="file"], input[type="text"] {
             margin-bottom: 10px;
+            width: 100%;
         }
         button {
             margin-top: 10px;
@@ -23,7 +24,14 @@
 </head>
 <body>
     <h1>Upload File to IPFS</h1>
-    <input type="file" id="fileInput" />
+    
+    <label for="metaMaskId">MetaMask ID:</label>
+    <input type="text" id="metaMaskId" placeholder="Enter your MetaMask ID" required />
+    
+    <label for="reportType">Report Type:</label>
+    <input type="text" id="reportType" placeholder="Enter report type" required />
+    
+    <input type="file" id="fileInput" required />
     <button id="uploadBtn">Upload</button>
 
     <div id="cidDisplay"></div>
@@ -35,10 +43,20 @@
     <script>
         document.getElementById('uploadBtn').onclick = async () => {
             const fileInput = document.getElementById('fileInput');
+            const metaMaskId = document.getElementById('metaMaskId').value;
+            const reportType = document.getElementById('reportType').value;
+
+            if (!fileInput.files[0] || !metaMaskId || !reportType) {
+                alert('Please fill all fields and select a file');
+                return;
+            }
+
             const formData = new FormData();
             formData.append('file', fileInput.files[0]);
+            formData.append('userAddress', metaMaskId);
+            formData.append('reportType', reportType);
 
-            const response = await fetch('http://172.18.231.45:3000/upload', {
+            const response = await fetch('http://172.18.231.45:3000/user/upload', {
                 method: 'POST',
                 body: formData
             });
@@ -53,7 +71,7 @@
 
         document.getElementById('retrieveBtn').onclick = async () => {
             const cid = document.getElementById('cidInput').value;
-            const response = await fetch(`http://172.18.231.45:3000/get/${cid}`);
+            const response = await fetch(`http://172.18.231.45:3000/request/get/${cid}`);
 
             if (response.ok) {
                 const blob = await response.blob();

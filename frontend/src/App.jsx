@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Wallet, NotFound, Datasets, Navbar, Register, ViewRecords, Request, AddRecords, BloodReport, Diagnosis, PhysicalCheckup, Dashboard, ResearcherDashboard, ViewRequests, AccessLogs } from './components';
+import { Wallet, NotFound, Navbar, Register, ViewRecords, Request, AddRecords, BloodReport, Diagnosis, PhysicalCheckup, Dashboard, ResearcherDashboard, ViewRequests } from './components';
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -20,8 +20,6 @@ function App() {
           <Route path="/viewrequests" element={<ViewRequests />} />
           <Route path="/viewrecords" element={<ViewRecords />} />
           <Route path="/request" element={<Request />} />
-          <Route path="/accesslogs" element={<AccessLogs />} />
-          <Route path="/datasets" element={<Datasets />} />
           {/* Fallback route for undefined paths */}
           <Route path="*" element={<NotFound />} />
         </Routes>

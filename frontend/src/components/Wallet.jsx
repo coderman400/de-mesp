@@ -12,7 +12,7 @@ function Auth() {
   const navigate = useNavigate();
 
   const goToResearchDashboard = () => navigate('/re/dashboard'); // Navigate to researcher dashboard
-  const goToDashboard = () => navigate('/dashboard');
+
   const handleLogin = async (address) => {
     try {
       const response = await axios.post('http://172.18.231.45:3000/auth/login', { metamaskId: address });
@@ -98,9 +98,9 @@ function Auth() {
         <div className='p-10'>
           <p className='text-lg'>Welcome, your address: {currentAccount}</p>
           {role === 'researcher' ? (
-            <button className='w-full font-bold bg-green-500 text-white p-2 my-2 rounded mt-16 hover:bg-green-300' onClick={goToResearchDashboard}>Dashboard</button>
+            <button className='w-full font-bold bg-green-500 text-white p-2 my-2 rounded mt-16 hover:bg-green-300' onClick={goToResearchDashboard}>Research Dashboard</button>
           ) : (
-            <button className='w-full font-bold bg-green-500 text-white p-2 my-2 rounded mt-16 hover:bg-green-300' onClick={goToDashboard}>Dashboard</button>
+            <button className='w-full font-bold bg-green-500 text-white p-2 my-2 rounded mt-16 hover:bg-green-300'>Dashboard</button>
           )}
           {role && <p className='m-4 text-lg font-bold text-center'>Your role: <span className='text-[#ED7B84]'>{role}</span></p>} {/* Display the user's role */}
         </div>

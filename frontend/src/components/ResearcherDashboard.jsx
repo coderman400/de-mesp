@@ -55,7 +55,7 @@ const ResearcherDashboard = () => {
     fetchBalance();
   }, []);
 
-  const goToViewRequests = () => navigate('/request');
+  const goToViewRequests = () => navigate('/viewrequests');
   const goToDatasets = () => navigate('/datasets');
 
   return (

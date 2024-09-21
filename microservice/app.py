@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import FileResponse
-from core.utils import PdfProcessing
+from core.utils.obfuscation import PdfProcessing
 from pathlib import Path
 import shutil
 import os

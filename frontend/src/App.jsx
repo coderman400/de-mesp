@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Wallet , NotFound, Register, AddRecords, BloodReport, Diagnosis, PhysicalCheckup} from './components'
+import { Wallet , NotFound, Register, AddRecords, BloodReport, Diagnosis, PhysicalCheckup, Dashboard} from './components'
 import './App.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -14,6 +14,7 @@ function App() {
             <Route path="/addrecords/blood-report" element={<BloodReport />} />
             <Route path="/addrecords/diagnosis" element={<Diagnosis />} />
             <Route path="/addrecords/physical-checkup" element={<PhysicalCheckup />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             {/* Fallback route for undefined paths */}
             <Route path="*" element={<NotFound />} />
           </Routes>

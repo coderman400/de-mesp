@@ -79,7 +79,7 @@ function Auth() {
           {/* You can also add logic to show user info or redirect */}
         </div>
       ) : (
-        <button className='w-full font-bold bg-blue-500 text-white p-2 my-2 rounded mt-16 hover:bg-blue-600' onClick={connectWallet}>Connect Wallet</button>
+        <button className='w-full font-bold bg-[#D6D5B3] text-white p-2 my-2 rounded mt-16 hover:bg-[#ED7B84]' onClick={connectWallet}>Connect Wallet</button>
       )}
       
     </div>

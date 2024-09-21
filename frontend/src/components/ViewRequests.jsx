@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import contractData from '../json/MedicalDataConsent.json'; 
 const abi = contractData.abi;
-const CONTRACT_ADDRESS = '0xdbf13f83cf94670d5e4149077690da2e83d21bf2';
+import contractAddressData from '../assets/contractAddress.json'
+const CONTRACT_ADDRESS = contractAddressData.contractAddress;
 
 const ViewRequests = () => {
   const [events, setEvents] = useState([]);

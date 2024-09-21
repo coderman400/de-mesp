@@ -3,6 +3,10 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { ethers } from 'ethers';
 import contractData from '../json/MedicalDataConsent.json'
+import contractAddressData from '../assets/contractAddress.json'
+
+const contractAddress = contractAddressData.contractAddress
+
 const abi = contractData.abi
 
 const BloodReportForm = () => {
@@ -48,7 +52,7 @@ const BloodReportForm = () => {
       // Store IPFS CID in the smart contract
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-      const contract = new ethers.Contract('0xdbf13f83cf94670d5e4149077690da2e83d21bf2', abi, signer);
+      const contract = new ethers.Contract(contractAddress, abi, signer);
 
       try {
         const tx = await contract.addMedicalRecord(ipfsHash);

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import contractData from '../json/MedicalDataConsent.json'; 
 const abi = contractData.abi;
-import contractAddressData from '../assets/contractAddress.json'
+import contractAddressData from '../assets/contractAddress.json';
 const CONTRACT_ADDRESS = contractAddressData.contractAddress;
 
 const ViewRequests = () => {
@@ -35,11 +35,8 @@ const ViewRequests = () => {
         if (requesters.length === 0) {
           setEvents([]);
         } else {
-          const requests = requesters.map((researcher) => ({
-            researcher,
-            patient: signerAddress
-          }));
-          setEvents(requests);
+          const pendingRequests = await filterPendingRequests(requesters, contract, signerAddress);
+          setEvents(pendingRequests);
         }
         setLoading(false);
       } catch (error) {
@@ -49,6 +46,22 @@ const ViewRequests = () => {
 
     fetchRequests();
   }, []);
+
+  const filterPendingRequests = async (requesters, contract, patientAddress) => {
+    const pendingRequests = [];
+    
+    for (const researcher of requesters) {
+      // Check if consent is already approved
+      const consent = await contract.consents(patientAddress, researcher);
+
+      // Only include if consent is not yet given
+      if (!consent.isApproved) {
+        pendingRequests.push({ researcher, patient: patientAddress });
+      }
+    }
+
+    return pendingRequests;
+  };
 
   // Function to handle modal and auto-hide it after 3 seconds
   const showModalWithMessage = (message) => {

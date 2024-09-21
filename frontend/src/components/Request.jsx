@@ -37,46 +37,10 @@ const Request = () => {
       await tx.wait();
 
       alert(`Access request sent to ${patientAddress}!`);
-      
-      // After requesting access, update the local state
-      updatePatientStatus(patientAddress, false);
     } catch (error) {
       console.error('Error requesting access:', error);
     }
   };
-
-  const updatePatientStatus = async (patientAddress, isApproved) => {
-    const updatedPatients = patients.filter(patient => patient.userAddress !== patientAddress);
-    setPatients(updatedPatients); // Update local state to reflect the latest status
-  };
-
-  const filterPendingRequests = async (patients) => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(contractAddress, abi, signer);
-    
-    const pendingPatients = [];
-
-    for (const patient of patients) {
-      const hasConsent = await contract.hasConsent(patient.userAddress);
-      if (!hasConsent) {
-        pendingPatients.push(patient);
-      }
-    }
-    
-    return pendingPatients;
-  };
-
-  const loadPendingRequests = async () => {
-    const pendingPatients = await filterPendingRequests(patients);
-    setPatients(pendingPatients);
-  };
-
-  useEffect(() => {
-    if (!loading) {
-      loadPendingRequests();
-    }
-  }, [loading]);
 
   if (loading) {
     return <div>Loading patients...</div>;
@@ -94,7 +58,7 @@ const Request = () => {
             {patients.map((patient, index) => (
               <li key={index} className='flex justify-between items-center m-2 text-lg'>
                 <div>
-                    <span className='mr-8'>{index + 1}</span>
+                    <span className='mr-8'>{index+1}</span>
                     <span className='mx-3 font-semibold'>{patient.disease}</span>
                 </div>
                 <button

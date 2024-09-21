@@ -1,42 +1,47 @@
 import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 
-
-import abi from '../json/MedicalDataConsent.json'; 
-const CONTRACT_ADDRESS = '0xYourContractAddressHere';
+import contractData from '../json/MedicalDataConsent.json'; 
+const abi = contractData.abi;
+const CONTRACT_ADDRESS = '0x029363c01b720af5f07dff8f4e0e2f040c677fb7';
 
 const ViewRequests = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchRequests = async () => {
       try {
-        // Ensure MetaMask is installed
-        if (typeof window.ethereum !== 'undefined') {
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-          const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, provider);
-
-          // Fetch "AccessRequested" events for the current user (patient)
-          const filter = contract.filters.AccessRequested(null, window.ethereum.selectedAddress);
-          const eventLogs = await contract.queryFilter(filter);
-
-          const eventDetails = eventLogs.map(log => ({
-            researcher: log.args.researcher,
-            patient: log.args.patient
-          }));
-
-          setEvents(eventDetails);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const signerAddress = await signer.getAddress();  // Ensure this is correct
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, provider);
+  
+        // Fetch the researchers who requested access
+        const requesters = await contract.getAccessRequesters(signerAddress);
+        
+        if (requesters.length === 0) {
+          console.log("No access requests found for this patient.");
+          setEvents([]);  // Handle empty case
+          setLoading(false);
+          return;
         }
-      } catch (error) {
-        console.error('Error fetching events:', error);
-      } finally {
+  
+        const requests = requesters.map((researcher) => ({
+          researcher, 
+          patient: signerAddress
+        }));
+  
+        setEvents(requests);
         setLoading(false);
+      } catch (error) {
+        console.error('Error fetching access requests:', error);
       }
     };
-
-    fetchEvents();
+  
+    fetchRequests();
   }, []);
+  
 
   const handleApprove = async (researcherAddress) => {
     try {

@@ -16,7 +16,7 @@ class Summarizer:
 
     def summarize(self):
         summary = self.summarizer(
-                                                    text, 
+                                                    self.text, 
                                                     max_length=self.max_len, 
                                                     min_length=self.min_len,
                                                     do_sample=False)

@@ -24,3 +24,16 @@ export const decrypt = (text, walletId) => {
   decrypted += decipher.final('utf8');
   return decrypted;
 };
+
+// // Encryption and decryption routes
+// app.post('/encrypt', (req, res) => {
+//   const { walletId, ipfsHash } = req.body;
+//   const encryptedHash = encrypt(ipfsHash, walletId);
+//   res.json({ encryptedHash });
+// });
+
+// app.post('/decrypt', (req, res) => {
+//   const { walletId, encryptedHash } = req.body;
+//   const decryptedHash = decrypt(encryptedHash, walletId);
+//   res.json({ decryptedHash });
+// });

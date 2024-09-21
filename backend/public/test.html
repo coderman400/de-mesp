@@ -53,7 +53,7 @@
 
         document.getElementById('retrieveBtn').onclick = async () => {
             const cid = document.getElementById('cidInput').value;
-            const response = await fetch(`http://localhost:3000/get/${cid}`);
+            const response = await fetch(`http://172.18.231.45:3000/get/${cid}`);
 
             if (response.ok) {
                 const blob = await response.blob();

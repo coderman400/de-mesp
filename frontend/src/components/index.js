@@ -6,4 +6,5 @@ import BloodReport from './BloodReport.jsx'
 import Diagnosis from './Diagnosis.jsx'
 import PhysicalCheckup from './PhysicalCheckup.jsx'
 import Dashboard from './Dashboard.jsx'
-export {Wallet, Register, Dashboard, NotFound, AddRecords, BloodReport, Diagnosis, PhysicalCheckup}
+import ViewRequests from './ViewRequests.jsx'
+export {Wallet, Register, ViewRequests, Dashboard, NotFound, AddRecords, BloodReport, Diagnosis, PhysicalCheckup}

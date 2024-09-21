@@ -6,10 +6,10 @@ import {useNavigate} from 'react-router-dom'
 function Auth() {
   const [currentAccount, setCurrentAccount] = useState(null);
   const [role, setRole] = useState(null);
-
+  
   const navigate = useNavigate();
 
-  const goToAddRecords = () => navigate('/addrecords/');
+  const goToDashboard = () => navigate('/dashboard/');
   
   const handleLogin = async (address) => {
     try {
@@ -74,7 +74,7 @@ function Auth() {
       {currentAccount ? (
         <div className='p-10'>
           <p className='text-lg'>Welcome, your address: {currentAccount}</p>
-          <button className='w-full font-bold bg-green-500 text-white p-2 my-2 rounded mt-16 hover:bg-green-300' onClick={goToAddRecords}>Add Records</button>
+          <button className='w-full font-bold bg-green-500 text-white p-2 my-2 rounded mt-16 hover:bg-green-300' onClick={goToDashboard}>Dashboard</button>
           {role && <p>Your role: {role}</p>} {/* Display the user's role */}
           {/* You can also add logic to show user info or redirect */}
         </div>

@@ -11,14 +11,12 @@ function Auth() {
   
   const navigate = useNavigate();
 
-  const goToDashboard = () => navigate('/dashboard/');
+  const goToResearchDashboard = () => navigate('/re/dashboard'); // Navigate to researcher dashboard
 
   const handleLogin = async (address) => {
     try {
-      let metamaskId = address
-      const response = await axios.post('http://172.18.231.45:3000/auth/login', { metamaskId });
+      const response = await axios.post('http://172.18.231.45:3000/auth/login', { metamaskId: address });
       if (response.status === 200) {
-        // Set user role based on the response
         setRole(response.data.role);
         
         // Show modal if the role is "none"
@@ -37,7 +35,11 @@ function Auth() {
       if (response.status === 201) {
         setRole(selectedRole); // Update the role state
         setShowModal(false); // Close the modal
-        window.location.reload(); // Refresh the page
+        if (selectedRole === "researcher") {
+          navigate('/re/dashboard'); // Redirect to researcher dashboard
+        } else {
+          window.location.reload(); // Refresh the page for other roles
+        }
       }
     } catch (error) {
       console.error("Error saving role:", error);
@@ -95,7 +97,11 @@ function Auth() {
       {currentAccount ? (
         <div className='p-10'>
           <p className='text-lg'>Welcome, your address: {currentAccount}</p>
-          <button className='w-full font-bold bg-green-500 text-white p-2 my-2 rounded mt-16 hover:bg-green-300' onClick={goToDashboard}>Dashboard</button>
+          {role === 'researcher' ? (
+            <button className='w-full font-bold bg-green-500 text-white p-2 my-2 rounded mt-16 hover:bg-green-300' onClick={goToResearchDashboard}>Research Dashboard</button>
+          ) : (
+            <button className='w-full font-bold bg-green-500 text-white p-2 my-2 rounded mt-16 hover:bg-green-300'>Dashboard</button>
+          )}
           {role && <p className='m-4 text-lg font-bold text-center'>Your role: <span className='text-[#ED7B84]'>{role}</span></p>} {/* Display the user's role */}
         </div>
       ) : (

@@ -9,4 +9,6 @@ import Dashboard from './Dashboard.jsx'
 import ViewRequests from './ViewRequests.jsx'
 import Request from './Request.jsx'
 import Navbar from './Navbar.jsx'
-export {Wallet,Navbar, Register, ViewRequests, Request, Dashboard, NotFound, AddRecords, BloodReport, Diagnosis, PhysicalCheckup}
+import ViewRecords from './ViewRecords.jsx'
+import ResearcherDashboard from './ResearcherDashboard.jsx'
+export {Wallet,Navbar, Register, ViewRequests,ViewRecords, Request, Dashboard, ResearcherDashboard, NotFound, AddRecords, BloodReport, Diagnosis, PhysicalCheckup}

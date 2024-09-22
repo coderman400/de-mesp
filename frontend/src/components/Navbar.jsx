@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Navbar = () => {
     return (
-        <nav className="bg-white p-4 mx-auto w-4/5 shadow-lg rounded-lg" style={{ position: 'fixed', top: '20px', left: '10%', right: '10%', zIndex: 1000 }}>
+        <nav className="bg-white p-4 mx-auto w-4/5 max-w-6xl shadow-lg rounded-lg" style={{ position: 'fixed', top: '20px', left: '10%', right: '10%', zIndex: 1000 }}>
             <div className="container flex justify-between items-center">
                 <h1 className="text-black text-2xl font-bold"><Link to="/">DeMESP</Link></h1>
                 <ul className="flex space-x-4">

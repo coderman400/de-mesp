@@ -26,9 +26,9 @@ const DiagnosisForm = () => {
         }
 
         // Handle image upload
-        // if (imageFile) {
-        //     formData.append('image', imageFile);
-        // }
+        if (imageFile) {
+            formData.append('image', imageFile);
+        }
 
         let userAddress;
         let signer;
@@ -52,15 +52,19 @@ const DiagnosisForm = () => {
 
         try {
             // Send formData to the backend
-            const response = await axios.post(`http://${apiAddress}/user/upload`, formData);
-            const ipfsHash = response.data.cid; // The CID returned from IPFS
-
-            // Store IPFS CID in the smart contract
-            const contract = new ethers.Contract(contractAddress, abi, signer);
-            const tx = await contract.addMedicalRecord(ipfsHash);
-            await tx.wait(); // Wait for the transaction to be mined
-
-            alert('Diagnosis submitted successfully!');
+            const response = await axios.post(`http://${apiAddress}/user/upload2`, formData);
+            const validation = response.data.validation;
+            if(validation !== "Success"){
+                console.error('NOT VALID DATA')
+            }else{
+                const ipfsHash = response.data.cid; // The CID returned from IPFS
+                // Store IPFS CID in the smart contract
+                const contract = new ethers.Contract(contractAddress, abi, signer);
+                const tx = await contract.addMedicalRecord(ipfsHash);
+                await tx.wait(); // Wait for the transaction to be mined
+                alert('Diagnosis submitted successfully!')
+            }
+            ;
         } catch (error) {
             console.error('Error submitting diagnosis:', error);
             alert('Failed to submit the diagnosis.');

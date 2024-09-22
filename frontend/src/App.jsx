@@ -1,13 +1,27 @@
 import { useState } from 'react';
-import { Wallet, NotFound,Datasets, Navbar, Register, ViewRecords, Request, AddRecords, BloodReport, Diagnosis, PhysicalCheckup, Dashboard, ResearcherDashboard, ViewRequests, AccessLogs } from './components';
+import { Wallet, NotFound, Datasets, Navbar, Register, ViewRecords, Request, AddRecords, BloodReport, Diagnosis, PhysicalCheckup, Dashboard, ResearcherDashboard, ViewRequests, AccessLogs } from './components';
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
 function App() {
   return (
     <Router>
+      <AppContent />
+    </Router>
+  );
+}
+
+function AppContent() {
+  const location = useLocation(); // Now, this is inside the Router context
+
+  // Check if the current route is "/dashboard" or "/re/dashboard"
+  const isDashboard = location.pathname === '/dashboard' || location.pathname === '/re/dashboard';
+
+  return (
+    <>
       <Navbar />
-      <main className='flex bg-white m-40 mx-64 justify-center p-4 shadow-md max-w-screen-xl rounded-xl'>
+      {/* Conditionally apply styles based on the route */}
+      <main className={`flex justify-center ${!isDashboard ? 'bg-white m-40 mx-64 p-4 shadow-md max-w-screen-xl rounded-xl' : ''}`}>
         <Routes>
           <Route path="/" element={<Wallet />} />
           <Route path="/register" element={<Register />} />
@@ -26,7 +40,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-    </Router>
+    </>
   );
 }
 

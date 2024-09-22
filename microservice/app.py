@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import FileResponse
-from core.utils import PdfProcessing
+from core.utils.pipeline import ValidationEngine
 from pathlib import Path
 import shutil
 import os
@@ -21,12 +21,13 @@ def process_file(file: UploadFile = File(...)):
     with open(file_location, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    # base = PdfProcessing(file_location)
-    # base.get()
-    # file_location = Path(f"outputs/{file.filename.split(".")[0]}.txt")
-    # print(file_location)
+    base = ValidationEngine(file_location)
+    print(base.res)
 
-    return FileResponse(str(file_location), media_type='application/octet-stream', filename=file.filename)
+    file_location = Path(f"outputs/{file.filename.split(".")[0]}.txt")
+    print(file_location)
+    print(file.filename)
+    return FileResponse(str(file_location), media_type='application/octet-stream', filename=file_location.name)
 
 if __name__ == "__main__":
     import uvicorn

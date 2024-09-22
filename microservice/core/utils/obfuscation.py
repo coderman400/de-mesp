@@ -27,6 +27,9 @@ class ObfuscationEngine:
         with open(f"outputs/{self.file_name.split(".")[0]}.txt","w") as file:
             file.writelines(self.text)
 
+        return self.text
+    
+
     def extract_text(self):
         """Extracts text from pdf."""
         with pdfplumber.open(str(self.pdf_path)) as pdf:

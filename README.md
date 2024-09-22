@@ -1,15 +1,11 @@
-# Decentralized AI Marketplace for Medical Data Validation
-
+# Decentralized AI Marketplace for Medical Data 
 ## Table of Contents
 - [Overview](#overview)
 - [Key Features](#key-features)
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
 - [Setup & Installation](#setup--installation)
-- [How It Works](#how-it-works)
-- [Future Enhancements](#future-enhancements)
-- [Contributing](#contributing)
-- [License](#license)
+
 
 ## Overview
 This project is a **decentralized AI marketplace** focused on the **validation of medical data** using AI models and blockchain technology. It ensures secure and trustless data exchange between researchers and patients, with AI-driven validation techniques for medical documents and records. Blockchain ensures the immutability and transparency of transactions, while decentralized storage provides secure access to data.
@@ -24,12 +20,14 @@ This project is a **decentralized AI marketplace** focused on the **validation o
 ## Tech Stack
 ### Frontend
 - **React** for user interface and interaction.
+- **Tailwind** for styling.
 - **Metamask Integration** for blockchain transactions.
 
 ### Backend
 - **Node.js** and **Express** for handling API requests.
 - **Smart Contracts** written in **Solidity** for transaction logic.
 - **Blockchain**: Ethereum blockchain and IPFS for decentralized storage.
+- **FASTAPI**
 
 ### Machine Learning
 - **Hugging Face Transformers** for AI model validation (BERT-based models for medical data recognition).

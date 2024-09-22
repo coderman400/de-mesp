@@ -56,5 +56,5 @@ The system consists of multiple components:
 ### Steps to Install
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-repo/your-project.git
-   cd your-project
+   git clone [https://github.com/coderman400/de-mesp.git](https://github.com/coderman400/de-mesp.git)
+   cd de-mesp

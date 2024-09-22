@@ -4,7 +4,8 @@ import axios from 'axios';
 import { ethers } from 'ethers';
 import contractData from '../json/MedicalDataConsent.json'
 import contractAddressData from '../assets/contractAddress.json'
-
+import apiData from '../assets/contractAddress.json'
+const apiAddress = apiData.apiAddress
 const contractAddress = contractAddressData.contractAddress
 
 const abi = contractData.abi
@@ -48,7 +49,7 @@ const BloodReportForm = () => {
 
     try {
         // Send formData to the backend
-        const response = await axios.post('http://172.18.231.45:3000/user/upload', formData);
+        const response = await axios.post(`http://${apiAddress}/user/upload`, formData);
         const ipfsHash = response.data.cid; // The CID returned from IPFS
 
         // Store IPFS CID in the smart contract

@@ -4,33 +4,40 @@ import axios from 'axios';
 import { ethers } from 'ethers';
 import contractData from '../json/MedicalDataConsent.json';
 import contractAddressData from '../assets/contractAddress.json';
+import apiData from '../assets/contractAddress.json';
+const apiAddress = apiData.apiAddress;
 
 const contractAddress = contractAddressData.contractAddress;
 const abi = contractData.abi;
 
 const DiagnosisForm = () => {
-    const { register, handleSubmit, formState: { errors }, watch } = useForm();
+    const { register, handleSubmit, formState: { errors } } = useForm();
     const [pdfFile, setPdfFile] = useState(null); // State to hold the uploaded PDF file
+    const [imageFile, setImageFile] = useState(null); // State to hold the uploaded image
     const [loading, setLoading] = useState(false); // Loading state
 
     const onSubmit = async (data) => {
         setLoading(true);
         const formData = new FormData();
 
-        // Handle PDF upload and IPFS CID fetching logic
+        // Handle PDF upload
         if (pdfFile) {
             formData.append('file', pdfFile);
-            console.log(pdfFile);
         }
 
+        // Handle image upload
+        // if (imageFile) {
+        //     formData.append('image', imageFile);
+        // }
+
         let userAddress;
-        let signer; // Declare signer here
+        let signer;
 
         // Connect to MetaMask and get the user's address
         try {
             await window.ethereum.request({ method: 'eth_requestAccounts' });
             const provider = new ethers.providers.Web3Provider(window.ethereum);
-            signer = provider.getSigner(); // Assign signer here
+            signer = provider.getSigner();
             userAddress = await signer.getAddress();
         } catch (error) {
             console.error('Error fetching user address:', error);
@@ -45,7 +52,7 @@ const DiagnosisForm = () => {
 
         try {
             // Send formData to the backend
-            const response = await axios.post('http://172.18.231.45:3000/user/upload', formData);
+            const response = await axios.post(`http://${apiAddress}/user/upload`, formData);
             const ipfsHash = response.data.cid; // The CID returned from IPFS
 
             // Store IPFS CID in the smart contract
@@ -72,6 +79,16 @@ const DiagnosisForm = () => {
         }
     };
 
+    const handleImageUpload = (event) => {
+        const file = event.target.files[0];
+        if (file && (file.type.includes('image'))) {
+            setImageFile(file); // Store the image file
+        } else {
+            alert('Please upload a valid image file.');
+            setImageFile(null); // Reset if not a valid image
+        }
+    };
+
     return (
         <div className='flex justify-center items-center h-fit w-full'>
             <form onSubmit={handleSubmit(onSubmit)} className='bg-white shadow-md rounded p-6 w-4/5'>
@@ -79,7 +96,7 @@ const DiagnosisForm = () => {
 
                 {loading && <p className='text-blue-500'>Submitting, please wait...</p>} {/* Loading message */}
 
-                <label className='block text-gray-700'>Diagnosis Name</label>
+                <label className='block text-gray-700'>Diagnosis Desc:</label>
                 <input 
                     type='text' 
                     {...register('diagnosisName', { required: true })} 
@@ -96,6 +113,16 @@ const DiagnosisForm = () => {
                     onChange={handlePdfUpload} 
                     className='w-full p-2 mb-2 border border-gray-300 rounded'
                     disabled={loading} // Disable file input if loading
+                />
+
+                {/* Image Upload Section */}
+                <label className='block text-gray-700'>Upload Image</label>
+                <input 
+                    type='file' 
+                    accept='image/*' 
+                    onChange={handleImageUpload} 
+                    className='w-full p-2 mb-2 border border-gray-300 rounded'
+                    disabled={loading} // Disable if loading
                 />
 
                 <button 

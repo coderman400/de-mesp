@@ -55,7 +55,7 @@ const ResearcherDashboard = () => {
     fetchBalance();
   }, []);
 
-  const goToViewRequests = () => navigate('/viewrequests');
+  const goToRequests = () => navigate('/request');
   const goToDatasets = () => navigate('/datasets');
 
   return (
@@ -79,10 +79,10 @@ const ResearcherDashboard = () => {
 
         <div className='bg-white shadow-md rounded p-6 flex flex-col items-center'>
           <h2 className='text-2xl font-semibold'>Options</h2>
-          <button onClick={goToViewRequests} className='mt-2 h-fit text-xl rounded-xl p-3 w-4/5 bg-slate-300 hover:bg-slate-200 ease-linear duration-75'>
-            View Requests
+          <button onClick={goToRequests} className='mt-2 h-fit text-xl rounded-xl p-3 w-4/5 bg-[#ED7B84] text-white hover:bg-[#F5DBCB] ease-linear duration-75'>
+            Request
           </button>
-          <button onClick={goToDatasets} className='mt-2 h-fit text-xl rounded-xl p-3 w-4/5 bg-slate-300 hover:bg-slate-200 ease-linear duration-75'>
+          <button onClick={goToDatasets} className='mt-2 h-fit text-xl rounded-xl p-3 w-4/5 bg-[#7EB77F] text-white hover:bg-[#D6D5B3] ease-linear duration-75'>
             Datasets
           </button>
         </div>

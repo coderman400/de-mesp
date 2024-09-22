@@ -8,14 +8,14 @@ const Navbar = () => {
                 <h1 className="text-black text-2xl font-bold"><Link to="/">DeMESP</Link></h1>
                 <ul className="flex space-x-4">
                     <li>
-                        <Link to="/dashboard" className="text-black hover:bg-blue-700 rounded px-3 py-2">Home</Link>
+                        <Link to="/dashboard" className="text-black hover:bg-[#D6D5B3] rounded px-3 py-2">Home</Link>
                     </li>
                     <li>
-                        <Link to="/request" className="text-black hover:bg-blue-700 rounded px-3 py-2">Requests</Link>
+                        <Link  className="text-black hover:bg-[#D6D5B3] rounded px-3 py-2">About</Link>
                     </li>
-                    <li>
+                    {/* <li>
                         <Link to="/addrecords/" className="text-black hover:bg-blue-700 rounded px-3 py-2">Records</Link>
-                    </li>
+                    </li> */}
                 </ul>
             </div>
         </nav>

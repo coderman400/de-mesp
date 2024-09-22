@@ -3,10 +3,12 @@ import axios from 'axios';
 import { ethers } from 'ethers';
 import contractData from '../json/MedicalDataConsent.json'; // Import ABI
 import contractAddressData from '../assets/contractAddress.json';
+import apiData from '../assets/contractAddress.json'
+const apiAddress = apiData.apiAddress
 
 const contractAddress = contractAddressData.contractAddress;
 const abi = contractData.abi;
-const getDataAPI = "http://172.18.231.45:3000/request/upload-events";
+const getDataAPI = `http://${apiAddress}/request/upload-events`;
 
 const Request = () => {
   const [patients, setPatients] = useState([]);
@@ -17,6 +19,7 @@ const Request = () => {
       try {
         const response = await axios.get(getDataAPI);
         setPatients(response.data); // Assuming response.data is an array of patient objects
+        console.log(response.data);
       } catch (error) {
         console.error('Error fetching patient data:', error);
       } finally {
@@ -37,46 +40,14 @@ const Request = () => {
       await tx.wait();
 
       alert(`Access request sent to ${patientAddress}!`);
-      
-      // After requesting access, update the local state
-      updatePatientStatus(patientAddress, false);
+
+      // Remove the patient from the list after the request
+      const updatedPatients = patients.filter(patient => patient.userAddress !== patientAddress);
+      setPatients(updatedPatients); // Update local state to remove the patient
     } catch (error) {
       console.error('Error requesting access:', error);
     }
   };
-
-  const updatePatientStatus = async (patientAddress, isApproved) => {
-    const updatedPatients = patients.filter(patient => patient.userAddress !== patientAddress);
-    setPatients(updatedPatients); // Update local state to reflect the latest status
-  };
-
-  const filterPendingRequests = async (patients) => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(contractAddress, abi, signer);
-    
-    const pendingPatients = [];
-
-    for (const patient of patients) {
-      const hasConsent = await contract.hasConsent(patient.userAddress);
-      if (!hasConsent) {
-        pendingPatients.push(patient);
-      }
-    }
-    
-    return pendingPatients;
-  };
-
-  const loadPendingRequests = async () => {
-    const pendingPatients = await filterPendingRequests(patients);
-    setPatients(pendingPatients);
-  };
-
-  useEffect(() => {
-    if (!loading) {
-      loadPendingRequests();
-    }
-  }, [loading]);
 
   if (loading) {
     return <div>Loading patients...</div>;
@@ -99,7 +70,7 @@ const Request = () => {
                 </div>
                 <button
                   onClick={() => requestAccess(patient.userAddress)}
-                  className='bg-blue-500 text-white p-2 rounded hover:bg-blue-600'
+                  className='bg-[#ED7B84] text-white p-2 rounded hover:bg-[#F5DBCB] ease-linear duration-75'
                 >
                   Request Access
                 </button>

@@ -2,55 +2,72 @@ import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import contractData from '../json/MedicalDataConsent.json'; 
 const abi = contractData.abi;
-import contractAddressData from '../assets/contractAddress.json'
+import contractAddressData from '../assets/contractAddress.json';
 const CONTRACT_ADDRESS = contractAddressData.contractAddress;
 
 const ViewRequests = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [modalMessage, setModalMessage] = useState(''); // To store the modal message
-  const [showModal, setShowModal] = useState(false);    // To show/hide modal
+  const [modalMessage, setModalMessage] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const fetchRequests = async () => {
       try {
+        if (!window.ethereum) {
+          alert('MetaMask is not installed!');
+          return;
+        }
+
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         const signerAddress = await signer.getAddress();
-        const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, provider);
 
-        console.log("Contract Address:", CONTRACT_ADDRESS);
-        console.log("Signer Address:", signerAddress);
+        console.log('Fetching access requests for address:', signerAddress);
 
-        const record = await contract.medicalRecords(signerAddress);
-        if (!record.patient) {
-          console.log("No medical record found for this patient.");
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
+
+        // Debugging: Check if the contract is deployed at the address
+        const code = await provider.getCode(CONTRACT_ADDRESS);
+        if (code === '0x') {
+          console.error('Contract not found at address:', CONTRACT_ADDRESS);
+          showModalWithMessage('Contract not found. Check the address and network.');
           setLoading(false);
           return;
         }
 
+        // Fetch researchers who have requested access
         const requesters = await contract.getAccessRequesters(signerAddress);
-        console.log("Access Requesters:", requesters);
-
         if (requesters.length === 0) {
           setEvents([]);
         } else {
-          const requests = requesters.map((researcher) => ({
-            researcher,
-            patient: signerAddress
-          }));
-          setEvents(requests);
+          const pendingRequests = await filterPendingRequests(requesters, contract, signerAddress);
+          setEvents(pendingRequests);
         }
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching access requests:", error);
+        console.error('Error fetching access requests:', error);
+        showModalWithMessage('Error fetching access requests. Check the console for details.');
+        setLoading(false);
       }
     };
 
     fetchRequests();
   }, []);
 
-  // Function to handle modal and auto-hide it after 3 seconds
+  const filterPendingRequests = async (requesters, contract, patientAddress) => {
+    const pendingRequests = [];
+
+    for (const researcher of requesters) {
+      const consent = await contract.consents(patientAddress, researcher);
+      if (!consent.isApproved) {
+        pendingRequests.push({ researcher, patient: patientAddress });
+      }
+    }
+
+    return pendingRequests;
+  };
+
   const showModalWithMessage = (message) => {
     setModalMessage(message);
     setShowModal(true);
@@ -64,9 +81,9 @@ const ViewRequests = () => {
       const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
 
       const tx = await contract.giveConsent(researcherAddress);
-      await tx.wait(); 
+      await tx.wait();
 
-      setEvents(events.filter(event => event.researcher !== researcherAddress)); // Remove from list
+      setEvents(events.filter(event => event.researcher !== researcherAddress));
       showModalWithMessage(`Consent given to: ${researcherAddress}`);
     } catch (error) {
       console.error('Error giving consent:', error);
@@ -83,7 +100,7 @@ const ViewRequests = () => {
       const tx = await contract.revokeConsent(researcherAddress);
       await tx.wait();
 
-      setEvents(events.filter(event => event.researcher !== researcherAddress)); // Remove from list
+      setEvents(events.filter(event => event.researcher !== researcherAddress));
       showModalWithMessage(`Consent revoked from: ${researcherAddress}`);
     } catch (error) {
       console.error('Error revoking consent:', error);
@@ -135,7 +152,6 @@ const ViewRequests = () => {
         </table>
       )}
 
-      {/* Modal for confirmation */}
       {showModal && (
         <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center'>
           <div className='bg-white p-6 rounded shadow-md'>

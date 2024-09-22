@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ethers } from 'ethers';
-
-const getRecordsAPI = "http://172.18.231.45:3000/user/views"; // Your backend API endpoint
+import apiData from '../assets/contractAddress.json';
+const apiAddress = apiData.apiAddress;
+const getRecordsAPI = `http://${apiAddress}/user/views`; // Backend API endpoint
 
 const ViewRecords = () => {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentAccount, setCurrentAccount] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const checkWalletConnection = async () => {
     const { ethereum } = window;
@@ -33,26 +35,48 @@ const ViewRecords = () => {
 
   useEffect(() => {
     const fetchRecords = async () => {
-        if (!currentAccount) {
-          console.log("No current account available, skipping fetch.");
-          return;
-        }
-      
-        console.log("Fetching records for account:", currentAccount);
-        try {
-          const response = await axios.post(getRecordsAPI, { userAddress: currentAccount });
-          console.log("Response data:", response.data);
-          // Access the uploads array directly from response.data
-          setRecords(response.data.uploads || []); // Default to an empty array if uploads is undefined
-        } catch (error) {
-          console.error('Error fetching records:', error.message);
-          console.error('Error response:', error.response);
-        }
-      };
-      
+      if (!currentAccount) {
+        console.log("No current account available, skipping fetch.");
+        return;
+      }
+
+      console.log("Fetching records for account:", currentAccount);
+      try {
+        const response = await axios.post(getRecordsAPI, { userAddress: currentAccount });
+        setRecords(response.data.userUploads || []); // Set records from response
+      } catch (error) {
+        console.error('Error fetching records:', error.message);
+        setErrorMessage('Failed to fetch records.');
+      }
+    };
 
     fetchRecords();
   }, [currentAccount]);
+
+  // Function to handle file download from backend using IPFS hash
+  const downloadFile = async (ipfsHash, fileName) => {
+    try {
+      const response = await axios.post(
+        `http://${apiAddress}/request/get`, // Backend download endpoint
+        { ipfsHash }, 
+        {
+          responseType: 'blob', // Important to receive file as blob
+        }
+      );
+
+      // Create a download link and trigger the download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'medical_record.txt'); // Customize the file name
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      setErrorMessage('Error downloading file.');
+    }
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -63,6 +87,7 @@ const ViewRecords = () => {
       <div className='bg-white shadow-md rounded p-4 w-4/5'>
         <h1 className='text-2xl font-bold mb-4'>My Records</h1>
         <hr className='bg-black h-0.5'></hr>
+        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
         {records.length === 0 ? (
           <p>No records found.</p>
         ) : (
@@ -70,13 +95,12 @@ const ViewRecords = () => {
             {records.map((record, index) => (
               <li key={index} className='flex justify-between items-center m-2'>
                 <span>{record.disease}</span>
-                <a 
-                  href={record.downloadLink} 
+                <button
                   className='bg-green-500 text-white p-2 rounded hover:bg-green-600'
-                  download
+                  onClick={() => downloadFile(record.genMedInfoHash, record.fileName)}
                 >
                   Download
-                </a>
+                </button>
               </li>
             ))}
           </ul>

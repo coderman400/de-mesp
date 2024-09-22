@@ -3,6 +3,10 @@ import { ethers } from 'ethers';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import RoleSelectionModal from './RoleSelectionModal'; // Import the modal component
+import apiData from '../assets/contractAddress.json';
+import metamaskImage from '../assets/metamask.png'; // Import the image
+
+const apiAddress = apiData.apiAddress;
 
 function Auth() {
   const [currentAccount, setCurrentAccount] = useState(null);
@@ -12,10 +16,11 @@ function Auth() {
   const navigate = useNavigate();
 
   const goToResearchDashboard = () => navigate('/re/dashboard'); // Navigate to researcher dashboard
-
+  const goToDashboard = () => navigate('/dashboard');
+  
   const handleLogin = async (address) => {
     try {
-      const response = await axios.post('http://172.18.231.45:3000/auth/login', { metamaskId: address });
+      const response = await axios.post(`http://${apiAddress}/auth/login`, { metamaskId: address });
       if (response.status === 200) {
         setRole(response.data.role);
         
@@ -31,7 +36,7 @@ function Auth() {
 
   const handleRoleSelection = async (selectedRole) => {
     try {
-      const response = await axios.post('http://172.18.231.45:3000/auth/register', { metamaskId: currentAccount, role: selectedRole });
+      const response = await axios.post(`http://${apiAddress}/auth/register`, { metamaskId: currentAccount, role: selectedRole });
       if (response.status === 201) {
         setRole(selectedRole); // Update the role state
         setShowModal(false); // Close the modal
@@ -92,20 +97,20 @@ function Auth() {
   }, []);
 
   return (
-    <div className='h-80 w-fit'>
+    <div className='h-fit w-fit flex flex-col items-center'>
       <h1 className='text-4xl text-center font-bold m-4'>Connect Metamask Wallet</h1>
+      <img src={metamaskImage} alt="Metamask" className='w-48 h-48' /> {/* Display the image above the buttons */}
       {currentAccount ? (
-        <div className='p-10'>
-          <p className='text-lg'>Welcome, your address: {currentAccount}</p>
+        <div className='p-2 flex flex-col items-center'>
           {role === 'researcher' ? (
-            <button className='w-full font-bold bg-green-500 text-white p-2 my-2 rounded mt-16 hover:bg-green-300' onClick={goToResearchDashboard}>Research Dashboard</button>
+            <button className='w-full font-bold bg-green-500 text-white p-2 rounded mt-4 hover:bg-green-300' onClick={goToResearchDashboard}>Research Dashboard</button>
           ) : (
-            <button className='w-full font-bold bg-green-500 text-white p-2 my-2 rounded mt-16 hover:bg-green-300'>Dashboard</button>
+            <button className='w-full font-bold bg-green-500 text-white p-2 rounded mt-4 hover:bg-green-300' onClick={goToDashboard}>Dashboard</button>
           )}
           {role && <p className='m-4 text-lg font-bold text-center'>Your role: <span className='text-[#ED7B84]'>{role}</span></p>} {/* Display the user's role */}
         </div>
       ) : (
-        <button className='w-full font-bold bg-[#D6D5B3] text-white p-2 my-2 rounded mt-16 hover:bg-[#ED7B84]' onClick={connectWallet}>Connect Wallet</button>
+        <button className='w-full font-bold bg-[#D6D5B3] text-white p-2 my-2 rounded mt-4 hover:bg-[#ED7B84]' onClick={connectWallet}>Connect Wallet</button>
       )}
       
       {showModal && (

@@ -11,4 +11,6 @@ import Request from './Request.jsx'
 import Navbar from './Navbar.jsx'
 import ViewRecords from './ViewRecords.jsx'
 import ResearcherDashboard from './ResearcherDashboard.jsx'
-export {Wallet,Navbar, Register, ViewRequests,ViewRecords, Request, Dashboard, ResearcherDashboard, NotFound, AddRecords, BloodReport, Diagnosis, PhysicalCheckup}
+import AccessLogs from './AccessLogs.jsx'
+import Datasets from './Datasets.jsx'
+export {Wallet,Navbar,Datasets, AccessLogs, Register, ViewRequests,ViewRecords, Request, Dashboard, ResearcherDashboard, NotFound, AddRecords, BloodReport, Diagnosis, PhysicalCheckup}

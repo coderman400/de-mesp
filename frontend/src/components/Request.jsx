@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import contractData from '../json/MedicalDataConsent.json'; // Import ABI
 import contractAddressData from '../assets/contractAddress.json';
 import apiData from '../assets/contractAddress.json'
-const apiAddress = apiData.apiAddress
+const apiAddress = apiData.apiAddress;
 
 const contractAddress = contractAddressData.contractAddress;
 const abi = contractData.abi;
@@ -40,10 +40,7 @@ const Request = () => {
       await tx.wait();
 
       alert(`Access request sent to ${patientAddress}!`);
-
-      // Remove the patient from the list after the request
-      const updatedPatients = patients.filter(patient => patient.userAddress !== patientAddress);
-      setPatients(updatedPatients); // Update local state to remove the patient
+      // No state update to hide the row
     } catch (error) {
       console.error('Error requesting access:', error);
     }
@@ -65,8 +62,8 @@ const Request = () => {
             {patients.map((patient, index) => (
               <li key={index} className='flex justify-between items-center m-2 text-lg'>
                 <div>
-                    <span className='mr-8'>{index + 1}</span>
-                    <span className='mx-3 font-semibold'>{patient.disease}</span>
+                  <span className='mr-8'>{index + 1}</span>
+                  <span className='mx-3 font-semibold'>{patient.disease}</span>
                 </div>
                 <button
                   onClick={() => requestAccess(patient.userAddress)}

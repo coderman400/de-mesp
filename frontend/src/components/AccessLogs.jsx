@@ -86,7 +86,7 @@ const AccessLogs = () => {
           <thead>
             <tr className='bg-gray-200 text-gray-600 uppercase text-xl leading-normal'>
               <th className='py-3 px-6 text-left'>Researcher</th>
-              <th className='py-3 px-6 text-left'>IPFS Hash</th>
+              {/* <th className='py-3 px-6 text-left'>IPFS Hash</th> */}
               <th className='py-3 px-6 text-center'>Consent Status</th>
               <th className='py-3 px-6 text-center'>Actions</th>
             </tr>
@@ -95,7 +95,7 @@ const AccessLogs = () => {
             {accessLogs.map((log, index) => (
               <tr key={index} className='border-b border-gray-200 hover:bg-gray-100'>
                 <td className='py-3 px-6 text-left'>{log.researcher}</td>
-                <td className='py-3 px-6 text-left'>{log.ipfsHash}</td>
+                {/* <td className='py-3 px-6 text-left'>{log.ipfsHash}</td> */}
                 <td className='py-3 px-6 text-center'>{log.isApproved ? 'Approved' : 'Pending'}</td>
                 <td className='py-3 px-6 text-center'>
                   <button

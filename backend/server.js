@@ -1,23 +1,16 @@
-import express from 'express';
-import cors from 'cors';
-import multer from 'multer';
-import { create } from 'kubo-rpc-client';
-import mongoose from 'mongoose';
-import axios from 'axios';
-import FormData from 'form-data';
-import path from 'path';
-import bodyParser from 'body-parser';
-import session from 'express-session'; // Import session middleware
-import { fileURLToPath } from 'url';
-import { User,UserUploads } from './models/user.js';
-import { encrypt, decrypt } from './utils/crypto.js'; 
-import { generateUniqueNickname } from './utils/nameGeneration.js';
-import patientRoutes from './views/patient.js'
-import authRoutes from './views/auth.js'
-import requestRoutes from './views/requester.js'
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const path = require('path');
+const bodyParser = require('body-parser');
+const session = require('express-session');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Import models and routes
+const { User, UserUploads } = require('./models/user.js');
+const patientRoutes = require('./views/patient.js');
+const authRoutes = require('./views/auth.js');
+const requestRoutes = require('./views/requester.js');
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -43,7 +36,8 @@ app.use((req, res, next) => {
 
 app.use('/user', patientRoutes);
 app.use('/auth', authRoutes);
-app.use('/request', requestRoutes);
+app.use('/request', requestRoutes); 
+
 
 // Session middleware
 app.use(session({
@@ -54,21 +48,16 @@ app.use(session({
 }));
 
 // Connect to MongoDB
-try {
-  await mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true });
-  console.log('MongoDB connected successfully');
-} catch (err) {
-  console.error('MongoDB connection error:', err);
-}
-
-try {
-  await UserUploads.collection.dropIndex('userAddress_1');
-  console.log('Dropped existing index on userAddress.');
-} catch (error) {
-  if (error.code !== 27) { // Index not found error
-      console.error('Error dropping index:', error);
+const connectToDatabase = async () => {
+  try {
+    await mongoose.connect(mongoURL);
+    console.log('MongoDB connected successfully');
+  } catch (err) {
+    console.error('MongoDB connection error:', err);
   }
-}
+};
+connectToDatabase()
+
 
 app.get('/users', async (req, res) => {
   try {

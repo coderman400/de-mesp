@@ -1,6 +1,4 @@
-import mongoose from 'mongoose';
-const { Schema } = mongoose;
-
+const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
     userAddress: {
@@ -16,7 +14,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-})
+});
 
 const userUploadsSchema = new mongoose.Schema({
     userAddress: {
@@ -27,7 +25,7 @@ const userUploadsSchema = new mongoose.Schema({
     },
     fileName: {
         type: String,
-        required:true
+        required: true
     },
     disease: {
         type: String,
@@ -39,23 +37,20 @@ const userUploadsSchema = new mongoose.Schema({
     },
     diseaseSpecialInfoHash: {
         type: String,
-
     },
     imagesHash: {
         type: String,
-
     },
     miscDataHash: {
         type: String,
-
     }
 
 }, { timestamps: true });
 
+userUploadsSchema.index({ userAddress: 1, disease: 1, genMedInfoHash: 1 }, { unique: true });
 
-
-userUploadsSchema.index({ userAddress: 1, disease: 1,genMedInfoHash:1 }, { unique: true });
-
-export const User = mongoose.model('User', userSchema);
-export const UserUploads = mongoose.model('UserUploads',userUploadsSchema)
-
+// Export the models using module.exports
+module.exports = {
+    User: mongoose.model('User', userSchema),
+    UserUploads: mongoose.model('UserUploads', userUploadsSchema),
+};

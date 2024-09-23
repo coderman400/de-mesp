@@ -1,22 +1,14 @@
-import express from 'express';
-import { fileURLToPath } from 'url';
-import path from 'path';
-import multer from 'multer';
-import axios from 'axios';
-import FormData from 'form-data'; // Import form-data
-import { User,UserUploads } from '../models/user.js'; // Adjust the path as needed
-import { encrypt, decrypt } from '../utils/crypto.js'; 
-import { create } from 'kubo-rpc-client';
-import mongoose from 'mongoose';
+const express = require('express');
+const path = require('path');
+const multer = require('multer');
+const axios = require('axios');
+const FormData = require('form-data'); // Import form-data
+const { User, UserUploads } = require('../models/user.js'); // Adjust the path as needed
+const { ipfsUpload } = require('../utils/pinataUtils.js')
 
 const router = express.Router();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
-const ipfs = create({ url: 'http://localhost:5001' });
-
 
 
 router.post('/views', async (req, res) => {
@@ -30,27 +22,24 @@ router.post('/views', async (req, res) => {
             return res.status(404).json({ message: 'No uploads found for this user' });
         }
 
-        res.json({userUploads});
+        res.json({ userUploads });
     } catch (error) {
         console.error('Error fetching or decrypting user uploads:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
 
-
-
 router.get('/upload', async (req, res) => {
     res.sendFile(path.join(__dirname, '../public', 'test.html'));
-})
+});
 
 router.get('/view-records', async (req, res) => {
     res.sendFile(path.join(__dirname, '../public', 'db.html'));
-})
-
+});
 
 router.post('/upload', upload.single('file'), async (req, res) => {
     const { userAddress, reportType } = req.body;
-    const address = userAddress.toLowerCase()
+    const address = userAddress.toLowerCase();
     const file = req.file;
 
     if (!file) {
@@ -75,24 +64,17 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         });
 
         const processedFileBuffer = fastApiResponse.data;
-        console.log(processedFileBuffer)
-        console.log(`Uploaded file size: ${file.buffer.length}`);
-        console.log(`FastAPI response size: ${fastApiResponse.data.length}`);
 
-
-        // Upload to IPFS
-        const ipfsResult = await ipfs.add(processedFileBuffer);
-        const genMedInfoHash = ipfsResult.cid.toString();
-        // const encryptedHash = encrypt(genMedInfoHash, userAddress);
+        const ipfsHash = await ipfsUpload(file.originalname,processedFileBuffer)
         const newUpload = new UserUploads({
-            userAddress:address,
-            fileName:file.originalname,
-            disease:reportType,
-            genMedInfoHash:genMedInfoHash,
-        })
+            userAddress: address,
+            fileName: file.originalname,
+            disease: reportType,
+            genMedInfoHash: ipfsHash,
+        });
 
         await newUpload.save();
-        res.json({ cid: ipfsResult.cid.toString() });
+        res.json({ cid: ipfsHash });
     } catch (error) {
         console.error('Error processing file:', error);
         res.status(500).send(`Error processing file: ${error.message}`);
@@ -100,7 +82,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 });
 
 router.get('/form', (req, res) => {
-    res.sendFile(path.join(__dirname,'../public', 'fileupload.html'));
+    res.sendFile(path.join(__dirname, '../public', 'fileupload.html'));
 });
 
 router.post('/upload2', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'file', maxCount: 1 }]), async (req, res) => {
@@ -145,8 +127,8 @@ router.post('/upload2', upload.fields([{ name: 'image', maxCount: 1 }, { name: '
             maxContentLength: Infinity,
             maxBodyLength: Infinity,
         });
-        console.log(fastApiResponse.headers)
-        const validation = fastApiResponse.headers.get('x-validation-status')
+        console.log(fastApiResponse.headers);
+        const validation = fastApiResponse.headers.get('x-validation-status');
         const ipfsResult = await ipfs.add(fastApiResponse.data);
         const genMedInfoHash = ipfsResult.cid.toString();
         if (validation == "Success") {
@@ -155,14 +137,12 @@ router.post('/upload2', upload.fields([{ name: 'image', maxCount: 1 }, { name: '
                 fileName: pdfFile.originalname,
                 disease: reportType,
                 genMedInfoHash: genMedInfoHash,
-
             });
 
             await newUpload.save();
-            res.json({ cid: genMedInfoHash,validation:validation});
-        }
-        else {
-            res.json({validation:validation});
+            res.json({ cid: genMedInfoHash, validation: validation });
+        } else {
+            res.json({ validation: validation });
         }
     } catch (error) {
         console.error('Error processing files:', error);
@@ -170,12 +150,11 @@ router.post('/upload2', upload.fields([{ name: 'image', maxCount: 1 }, { name: '
     }
 });
 
-
 router.get('/list', async (req, res) => {
     try {
         // Use the distinct method with a filter condition for userRole
         const uniquePatientAddresses = await User.distinct('userAddress', { userRole: 'patient' });
-        console.log(uniquePatientAddresses)
+        console.log(uniquePatientAddresses);
         // Return the unique addresses as a JSON response
         res.status(200).json({
             success: true,
@@ -192,5 +171,4 @@ router.get('/list', async (req, res) => {
     }
 });
 
-
-export default router;
+module.exports = router;

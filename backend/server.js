@@ -70,8 +70,6 @@ try {
   }
 }
 
-
-
 app.get('/users', async (req, res) => {
   try {
     await User.deleteMany({});

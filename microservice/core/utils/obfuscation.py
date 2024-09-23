@@ -19,7 +19,6 @@ class ObfuscationEngine:
         self.extract_text()
         self.med = self.data_extract(self.text_rows)
         self.text = self.redact_sensitive_data(self.med)
-        self.clean_up()
 
 
     def get(self):
@@ -62,10 +61,5 @@ class ObfuscationEngine:
         """Extracts medical information from data."""
         response = self.model.generate_content(f"Extract just the medical results of the patient from {text} and return it as raw text without formatting.")
         return response.text
-
-    def clean_up(self):
-        """Empties upload directory."""
-        for file in UPLOADS.glob('*'):
-            file.unlink()
 
 

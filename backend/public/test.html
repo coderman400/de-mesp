@@ -56,7 +56,7 @@
             formData.append('userAddress', metaMaskId);
             formData.append('reportType', reportType);
 
-            const response = await fetch('http://172.18.231.45:3000/user/upload', {
+            const response = await fetch('http://192.168.129.109:3000/user/upload', {
                 method: 'POST',
                 body: formData
             });
@@ -71,14 +71,20 @@
 
         document.getElementById('retrieveBtn').onclick = async () => {
             const cid = document.getElementById('cidInput').value;
-            const response = await fetch(`http://172.18.231.45:3000/request/get/${cid}`);
+            const formData = new FormData();
+            formData.append('ipfsHash',cid);
+            
+            const response = await fetch(`http://192.168.202.109:3000/request/get/`,{
+                method:'POST',
+                body : formData
+            });
 
             if (response.ok) {
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'downloaded_file.pdf';
+                a.download = 'downloaded_file.txt';
                 document.body.appendChild(a);
                 a.click();
                 a.remove();

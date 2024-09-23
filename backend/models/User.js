@@ -54,7 +54,7 @@ const userUploadsSchema = new mongoose.Schema({
 
 
 
-userUploadsSchema.index({ userAddress: 1, disease: 1 }, { unique: true });
+userUploadsSchema.index({ userAddress: 1, disease: 1,genMedInfoHash:1 }, { unique: true });
 
 export const User = mongoose.model('User', userSchema);
 export const UserUploads = mongoose.model('UserUploads',userUploadsSchema)

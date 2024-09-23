@@ -5,6 +5,7 @@ from .utils import isMedicalData
 import os
 import dotenv
 import requests
+from pathlib import Path
 
 from transformers import BertTokenizer, BertModel
 from transformers import pipeline
@@ -20,10 +21,16 @@ class ValidationEngine:
         self.image_path = image_path
         self.direct_input = direct_input
         self.text = ObfuscationEngine(self.pdf_path).get()
+        print("obfuscation done")
         self.summary = self.file_validation_output()[1]
+        print("summary done")
         self.image_caption = self.image_validation(self.image_path)[1]
+        print("image captioning done")
+        print(self.summary,self.image_caption)
         self.res = self.combined_validation(self.summary,self.image_caption,self.direct_input)
         
+
+
 
     def file_validation_output(self):
         """Summarizes the data and checks if it contains medical information."""
@@ -31,14 +38,12 @@ class ValidationEngine:
 
         # Summarize the text
         summary = summarizer(self.text, max_length=50, min_length=25, do_sample=False)
+        pdf_summary=summary[0]['summary_text']
 
-        if(isMedicalData(summary[0]['summary_text'])):
-            pdf_summary=summary[0]['summary_text']
-            print(pdf_summary)
+        if(isMedicalData(pdf_summary)):
             return True,pdf_summary
         else:
-            print("File shared does not contain medical data")
-            return (False,)
+            return (False,pdf_summary)
         
 
     def image_validation(self,img_path):
@@ -52,12 +57,14 @@ class ValidationEngine:
         with open(img_path, "rb") as f:
             data = f.read()
             response = requests.post(API_URL, headers=headers, data=data)
+            
+        image_caption = response.json()[0]['generated_text']
+        print(image_caption)
 
-        if(isMedicalData(response.json()[0]['generated_text'])):
-            image_caption = response.json()[0]['generated_text']
+        if(isMedicalData(image_caption)):
             return True,image_caption
         else:
-            return (False,)
+            return (False,image_caption)
         
         
     def combined_validation(self,image_caption,file_summary,direct_input):
@@ -70,7 +77,4 @@ class ValidationEngine:
         similarity_2 = CSCM.compute(vector1, vector3)
         similarity_3 = CSCM.compute(vector2, vector3)
 
-        if similarity_1 > 0.5 and similarity_2 > 0.5 and similarity_3 > 0.5:
-            return "Document is validated!"
-        else:
-            return "Document is invalid!"
+        return similarity_1 > 0.5 and similarity_2 > 0.5 and similarity_3 > 0.5

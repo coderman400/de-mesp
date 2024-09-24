@@ -109,9 +109,11 @@ const Dashboard = () => {
           <h1 className='font-bold text-4xl m-4'>Access Logs</h1>
           <hr className='bg-black h-0.5'></hr>
           {accessLogs.map((log,index) => {
-            <p key= {index} className='text-2xl font-semibold m-4'>
-              {log.researcher}
+            let bg= index%2==0 ? 'bg-[#7EB77F]' : 'bg-[#ED7B84]'
+            return (<p key= {index} className={`text-lg font-semibold m-4 h-fit rounded-xl p-5 w-fit ${bg}`}>
+              {log.researcher.slice(0,25)}... {log.isApproved ? <span className='font-bold text-white align-right'>HAS ACCESS</span> : <span className='font-bold text-white align-right'>NO ACCESS</span> }
             </p>
+            )
           })}
           
         </div>

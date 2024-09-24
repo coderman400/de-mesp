@@ -76,14 +76,14 @@ const Dashboard = () => {
     <div className='w-full mt-36'>
       <div className='max-w-6xl mx-auto grid grid-cols-2 gap-8 items-start'>
         {/* Left column (Card) */}
-        <div id="card-1" className='bg-white w-full p-4 rounded-xl text-center'>
+        <div id="card-1" className='bg-white w-full p-4 rounded-xl text-center shadow-lg'>
           <h1 className='font-bold text-4xl m-4'> 
             Welcome, <span className='text-[#ED7B84]'>{address.slice(0,9)}...</span>
           </h1>
           <button onClick={goToAddRecords} className='h-fit text-2xl rounded-xl m-4 p-5 w-4/5 bg-[#7EB77F] hover:bg-[#D6D5B3] ease-linear duration-75'>
             Add Records
           </button>
-          <button onClick={goToViewRecords} className='h-fit text-2xl rounded-xl m-4 p-5 w-4/5 bg-[#D6D5B3] hover:[#F5DBCB] ease-linear duration-75'>
+          <button onClick={goToViewRecords} className='h-fit text-2xl rounded-xl m-4 p-5 w-4/5 bg-[#D6D5B3] hover:bg-[#F5DBCB] ease-linear duration-75'>
             View Records
           </button>
           <button onClick={goToViewRequests} className='h-fit text-2xl rounded-xl m-4 p-5 w-4/5 bg-[#ED7B84] hover:bg-[#F92A82] ease-linear duration-75'>
@@ -96,7 +96,7 @@ const Dashboard = () => {
 
         {/* Right column (Token Balance) */}
         <div className='w-full'>
-          <div className='bg-white p-4 rounded-xl'>
+          <div className='bg-white p-4 rounded-xl shadow-xl'>
           <h1 className='font-bold text-4xl m-4'>Tokens</h1>
           <hr className='bg-black h-0.5'></hr>
           {loading ? (
@@ -105,7 +105,7 @@ const Dashboard = () => {
             <p className='text-2xl font-semibold m-4'>{balance !== null ? `${balance} ETH` : 'Unable to fetch balance'}</p>
           )}
         </div>
-        <div className='mt-16 bg-white w-full p-4 rounded-xl'>
+        <div className='mt-16 bg-white w-full p-4 rounded-xl shadow-xl'>
           <h1 className='font-bold text-4xl m-4'>Access Logs</h1>
           <hr className='bg-black h-0.5'></hr>
           {accessLogs.map((log,index) => {

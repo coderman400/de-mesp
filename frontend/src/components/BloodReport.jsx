@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { ethers } from 'ethers';
+import { encrypt , decrypt } from '../utils/crypto-frontend.mjs'
 import contractData from '../json/MedicalDataConsent.json'
 import contractAddressData from '../assets/contractAddress.json'
 import apiData from '../assets/contractAddress.json'
@@ -50,7 +51,7 @@ const BloodReportForm = () => {
     try {
         // Send formData to the backend
         const response = await axios.post(`http://${apiAddress}/user/upload`, formData);
-        const ipfsHash = response.data.cid; // The CID returned from IPFS
+        const ipfsHash = response.data.cid
 
         // Store IPFS CID in the smart contract
         const contract = new ethers.Contract(contractAddress, abi, signer);

@@ -80,16 +80,16 @@ const Dashboard = () => {
           <h1 className='font-bold text-4xl m-4'> 
             Welcome, <span className='text-[#ED7B84]'>{address.slice(0,9)}...</span>
           </h1>
-          <button onClick={goToAddRecords} className='h-fit text-2xl rounded-xl m-4 p-5 w-4/5 bg-[#7EB77F] hover:bg-[#D6D5B3] ease-linear duration-75'>
+          <button onClick={goToAddRecords} className='h-fit text-2xl text-white font-bold rounded-xl m-4 p-5 w-4/5 bg-[#7EB77F] hover:bg-[#D6D5B3] ease-linear duration-75'>
             Add Records
           </button>
-          <button onClick={goToViewRecords} className='h-fit text-2xl rounded-xl m-4 p-5 w-4/5 bg-[#D6D5B3] hover:bg-[#F5DBCB] ease-linear duration-75'>
+          <button onClick={goToViewRecords} className='h-fit text-2xl text-white font-bold  rounded-xl m-4 p-5 w-4/5 bg-[#D6D5B3] hover:bg-[#F5DBCB] ease-linear duration-75'>
             View Records
           </button>
-          <button onClick={goToViewRequests} className='h-fit text-2xl rounded-xl m-4 p-5 w-4/5 bg-[#ED7B84] hover:bg-[#F92A82] ease-linear duration-75'>
+          <button onClick={goToViewRequests} className='h-fit text-2xl text-white font-bold  rounded-xl m-4 p-5 w-4/5 bg-[#ED7B84] hover:bg-[#F92A82] ease-linear duration-75'>
             View Requests
           </button>
-          <button onClick={goToAccessLogs} className='h-fit text-2xl rounded-xl m-4 p-5 w-4/5 bg-[#F92A82] hover:bg-[#ED7B84] ease-linear duration-75'>
+          <button onClick={goToAccessLogs} className='h-fit text-2xl text-white font-bold  rounded-xl m-4 p-5 w-4/5 bg-[#F92A82] hover:bg-[#ED7B84] ease-linear duration-75'>
             Access Logs
           </button>
         </div>
